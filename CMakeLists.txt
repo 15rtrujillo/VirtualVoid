@@ -14,5 +14,5 @@ add_executable(vv-vm
     "src/vm/VirtualMachine.cpp"
 )
 
-target_include_directories(vv-asm PRIVATE include)
-target_include_directories(vv-vm PRIVATE include)
+target_include_directories(vv-asm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(vv-vm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
