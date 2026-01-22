@@ -1,7 +1,10 @@
+#include "asm/assembler.h"
+
+#include <filesystem>
 #include <iostream>
 #include <string>
 
-static void print_error(std::string error)
+static void print_error(const std::string& error)
 {
     std::cerr << "vv-asm: " << error << std::endl;
     std::cerr << "Use vv-asm -h to see usage." << std::endl;
@@ -28,11 +31,11 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    std::string path;
+    std::string source;
     std::string output;
-    bool verboseFlag = false;
-    bool foundPath = false;
-    bool outputFlag = false;
+    bool verbose_flag = false;
+    bool found_source = false;
+    bool output_flag = false;
 
     for (int i = 1; i < argc; ++i)
     {
@@ -45,12 +48,12 @@ int main(int argc, char* argv[])
 
         else if (arg == "-v" || arg == "--verbose")
         {
-            verboseFlag = true;
+            verbose_flag = true;
         }
 
         else if (arg == "-o")
         {
-            outputFlag = true;
+            output_flag = true;
             if (i + 1 < argc)
             {
                 output = std::string(argv[i + 1]);
@@ -66,29 +69,59 @@ int main(int argc, char* argv[])
 
         else
         {
-            if (foundPath)
+            if (found_source)
             {
                 print_error("More than one non-command argument provided. Please only provide one path.");
                 return -1;
             }
 
-            path = arg;
-            foundPath = true;
+            source = arg;
+            found_source = true;
         }
     }
 
-    if (!foundPath)
+    if (!found_source)
     {
-        print_error("You must provide the path to an assembly file.");
+        print_error("You must provide the path to a .vvasm assembly file.");
         return -1;
     }
 
-    if (!outputFlag)
+    // Verify the path
+    std::filesystem::path source_path = source;
+    if (!std::filesystem::exists(source_path) || !std::filesystem::is_regular_file(source_path))
     {
-        // Get output file name from asm file name
+        print_error("The file you provided does not exist.");
+        return -1;
     }
 
-    // Begin assembly
+    if (source_path.extension().string() != ".vvasm")
+    {
+        print_error("The file you provided is not a .vvasm file.");
+        return -1;
+    }
 
-    return 0;
+    // Setup the output path
+    std::filesystem::path output_path;
+    std::filesystem::path binary_extension = ".vv";
+
+    if (output_flag)
+    {
+        output_path = output;
+    }
+
+    else
+    {
+        output_path = std::filesystem::path(source_path).replace_extension(binary_extension);
+    }
+
+    vv::assembler::Assembler assembler(source_path, output_path, verbose_flag);
+    if (assembler.assemble())
+    {
+        return 0;
+    }
+
+    else
+    {
+        return -1;
+    }
 }

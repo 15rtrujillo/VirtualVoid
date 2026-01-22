@@ -1,0 +1,32 @@
+#ifndef ASSEMBLER_H
+#define ASSEMBLER_H
+
+#include <filesystem>
+#include <fstream>
+#include <map>
+#include <string>
+
+namespace vv::assembler
+{
+    class Assembler
+    {
+    public:
+        Assembler(const std::filesystem::path& source, const std::filesystem::path& output, const bool verbose);
+
+        bool assemble();
+
+    private:
+        std::filesystem::path source;
+        std::filesystem::path output;
+
+        std::map<std::string, char> symbol_table;
+
+        int memory_pointer = 0;
+        int line_counter = 1;
+        bool verbose;
+
+        bool first_pass(std::ifstream& asm_file);
+    };
+}
+
+#endif
