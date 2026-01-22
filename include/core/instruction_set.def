@@ -1,0 +1,36 @@
+#ifndef X
+#define X(name, enum_val, hex)
+#endif
+
+X("SET", SET, 0x01)
+X("MOV", MOV, 0x02)
+X("LDR", LDR, 0x03)
+X("STR", STR, 0x04)
+X("PUSH", PUSH, 0x05)
+X("POP", POP, 0x06)
+
+X("ADD", ADD, 0x10)
+X("ADDI", ADDI, 0x11)
+X("SUB", SUB, 0x12)
+X("SUBI", SUBI, 0x13)
+X("MUL", MUL, 0x14)
+X("DIV", DIV, 0x15)
+X("AND", AND, 0x16)
+X("OR", OR, 0x17)
+X("XOR", XOR, 0x18)
+X("SHL", SHL, 0x19)
+X("SHR", SHR, 0x1A)
+
+X("CMP", CMP, 0x20)
+X("CMPI", CMPI, 0x21)
+X("JMP", JMP, 0x22)
+X("JZ", JZ, 0x23)
+X("JNZ", JNZ, 0x24)
+X("JLT", JLT, 0x25)
+X("CALL", CALL, 0x26)
+X("RET", RET, 0x27)
+
+X("HALT", HALT, 0x00)
+X("IN", IN, 0x30)
+X("OUT", OUT, 0x31)
+X("WAIT", WAIT, 0x32)

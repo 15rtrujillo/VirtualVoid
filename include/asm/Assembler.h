@@ -3,7 +3,7 @@
 
 #include <filesystem>
 #include <fstream>
-#include <map>
+#include <unordered_map>
 #include <string>
 
 namespace vv::assembler
@@ -19,10 +19,10 @@ namespace vv::assembler
         std::filesystem::path source;
         std::filesystem::path output;
 
-        std::map<std::string, char> symbol_table;
+        std::unordered_map<std::string, uint32_t> symbol_table;
 
-        int memory_pointer = 0;
-        int line_counter = 1;
+        uint32_t memory_pointer = 0;
+        uint32_t line_counter = 0;
         bool verbose;
 
         bool first_pass(std::ifstream& asm_file);
