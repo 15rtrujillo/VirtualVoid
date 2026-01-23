@@ -1,0 +1,6 @@
+; This file contains multiple errors
+.ORG 0x123 0x456  ; Too many operands
+.BYT 300  ; Out of range
+.BYT 'AB' ; Malformed char
+.DAT hello ; Invalid operand
+.ORG -1 ; Out of range

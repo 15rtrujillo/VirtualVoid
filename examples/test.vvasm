@@ -1,2 +1,6 @@
 ; This is a test vvasm file.
-
+.ORG 0x0000
+.BYT 0xAA, 'A', '\n'    ; Testing mix of hex, char, and escape
+.DAT -1, 0xFFFFFFFF     ; Testing signed vs unsigned 32-bit
+.ORG 0x0010             ; Testing a "gap" (padding)
+.BYT 0xBB
