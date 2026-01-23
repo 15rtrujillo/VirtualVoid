@@ -1,0 +1,11 @@
+#ifndef Y
+#define Y(name, enum_val)
+#endif
+
+Y(".ORG", ORG)
+Y(".DAT", DAT)
+Y(".BYT", BYT)
+Y(".STR", STR)
+Y(".RES", RES)
+Y(".ENT", ENT)
+Y(".EQU", EQU)

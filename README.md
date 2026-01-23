@@ -67,3 +67,14 @@ Store the immediate value 39,350 in R1.
 | IN | Read from I/O port(RB) into RA. |
 | OUT | Write value in RA to I/O port(RB). |
 | WAIT | Pause execution for RA milliseconds. |
+
+### Directives
+| Directive | Description |
+| --- | --- |
+| .ORG | Begin placing the following code/data at a specific memory location. |
+| .DAT | Places a 32-bit integer into memory. |
+| .BYT | Places a byte into memory. |
+| .STR | Places a string into memory, appending a null character. |
+| .RES | Skips a specifed number of bytes. |
+| .ENT | Specify a label to act as the start of the program. |
+| .EQU | Creates a constant. |
