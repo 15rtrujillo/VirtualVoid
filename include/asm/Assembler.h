@@ -21,11 +21,15 @@ namespace vv::assembler
 
         std::unordered_map<std::string, uint32_t> symbol_table;
 
-        uint32_t memory_pointer = 0;
+        uint32_t memory_location = 0;
         uint32_t line_counter = 0;
         bool verbose;
 
+        using handler_function = void (Assembler::*)(const std::vector<std::string>& operands);
+
         bool first_pass(std::ifstream& asm_file);
+        bool second_pass(std::ifstream& asm_file);
+
     };
 }
 

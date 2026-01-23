@@ -1,8 +1,11 @@
 #include "asm/assembler.h"
+#include "asm/directive.h"
 #include "core/instruction_set.h"
 
+#include <algorithm>
 #include <ios>
 #include <iostream>
+#include <sstream>
 
 namespace vv::assembler
 {
@@ -22,6 +25,23 @@ namespace vv::assembler
         text.erase(std::find_if_not(text.rbegin(), text.rend(), [](unsigned char ch) {
             return std::isspace(ch);
             }).base(), text.end());
+    }
+
+    static inline std::vector<std::string> tokenize(const std::string& text)
+    {
+        std::string copy = text;
+        std::replace(copy.begin(), copy.end(), ',', ' ');
+
+        std::istringstream buffer(text);
+        std::vector<std::string> result;
+        std::string s;
+
+        while (buffer >> s)
+        {
+            result.push_back(s);
+        }
+
+        return result;
     }
 
     Assembler::Assembler(const std::filesystem::path& source, const std::filesystem::path& output, const bool verbose = false) : source(source), output(output), verbose(verbose)
@@ -58,11 +78,42 @@ namespace vv::assembler
         {
             ++this->line_counter;
 
-            std::cout << line << std::endl;
             strip_comment(line);
-            std::cout << "No comment: " << line << std::endl;
             trim(line);
-            std::cout << "No whitespace: " << line << std::endl;
+            std::vector<std::string> tokens = tokenize(line);
+
+            if (tokens.empty())
+            {
+                continue;
+            }
+
+            uint8_t current_token = 0;
+
+            if (tokens.at(current_token).ends_with(':'))
+            {
+                // We have a label
+                std::string label_token = tokens.at(current_token);
+
+                std::string label = label_token.substr(0, label_token.size() - 1);
+                auto result = this->symbol_table.try_emplace(label, this->memory_location);
+                if (!result.second)
+                {
+                    std::cerr << "Duplicate label \"" << label << "\" on line " << this->line_counter << std::endl;
+                    return false;
+                }
+
+                if (this->verbose)
+                {
+                    std::cout << "Symbol \"" << label << "\" added to symbol table at memory location " << this->memory_location << std::endl;
+                }
+
+                ++current_token;
+            }
+
+            if (tokens.at(current_token).starts_with('.'))
+            {
+                std::string directive_token = tokens.at(current_token);
+            }
         }
 
         return true;
