@@ -10,4 +10,5 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 cpp_indent_braces = false
+cpp_indent_case_labels = true
 cpp_indent_case_contents = true
