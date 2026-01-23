@@ -1,11 +1,11 @@
-#ifndef Y
-#define Y(name, enum_val)
+#ifndef X
+#define X(name, enum_val, handler_func)
 #endif
 
-Y(".ORG", ORG)
-Y(".DAT", DAT)
-Y(".BYT", BYT)
-Y(".STR", STR)
-Y(".RES", RES)
-Y(".ENT", ENT)
-Y(".EQU", EQU)
+X(".ORG", ORG, handle_org)
+X(".DAT", DAT, handle_dat)
+X(".BYT", BYT, handle_byt)
+X(".STR", STR, handle_str)
+X(".RES", RES, handle_res)
+X(".ENT", ENT, handle_ent)
+X(".EQU", EQU, handle_equ)

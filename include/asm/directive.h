@@ -7,9 +7,9 @@ namespace vv::assembler
 {
     enum class Directive : uint8_t
     {
-#define Y(name, enum_val) enum_val,
+#define X(name, enum_val, handler_func) enum_val,
 #include "asm/directive.def"
-#undef Y
+#undef X
     };
 }
 
