@@ -45,10 +45,10 @@ namespace vv::assembler
         return result;
     }
 
-    Assembler::Assembler(const std::filesystem::path& source, const std::filesystem::path& output, const bool verbose = false) : source(source), output(output), verbose(verbose) { }
+    Assembler::Assembler(const std::filesystem::path& source, const std::filesystem::path& output, const bool verbose) : source(source), output(output), verbose(verbose) { }
 
     std::unordered_map<std::string, Assembler::DirectiveInfo> Assembler::directive_handlers = {
-#define X(name, enum_val, handler_func) { name, { Directive::enum_val, &Assembler::handler_func } },
+#define X(name, enum_val, handler_func, raw_line) { name, { Directive::enum_val, &Assembler::handler_func, raw_line } },
 #include "asm/directive.def"
 #undef X
     };
@@ -62,10 +62,7 @@ namespace vv::assembler
             return false;
         }
 
-        if (this->verbose)
-        {
-            print_verbose("Beginning first pass to build symbol table...");
-        }
+        print_verbose("Beginning first pass to build symbol table...");
 
         make_pass(asm_file, true);
 
@@ -89,7 +86,10 @@ namespace vv::assembler
 
     inline void Assembler::print_verbose(const std::string& message, const bool line) const
     {
-        std::cout << "[VERBOSE] " << (line ? "Line: " + std::to_string(this->line_counter) + ": " : "") << message << std::endl;
+        if (this->verbose)
+        {
+            std::cout << "[VERBOSE] " << (line ? "Line: " + std::to_string(this->line_counter) + ": " : "") << message << std::endl;
+        }
     }
 
     void Assembler::make_pass(std::ifstream& asm_file, const bool first_pass)
@@ -116,7 +116,7 @@ namespace vv::assembler
 
                 if (!first_pass)
                 {
-                    return;
+                    continue;
                 }
 
                 std::string label = label_token.substr(0, label_token.size() - 1);
@@ -134,13 +134,19 @@ namespace vv::assembler
                 }
             }
 
-            if (tokens.front().starts_with('.'))
+            if (!tokens.empty() && tokens.front().starts_with('.'))
             {
                 std::string directive_token = tokens.front();
                 tokens.pop_front();
 
+                if (this->directive_handlers.find(directive_token) == this->directive_handlers.end())
+                {
+                    error_occurred("Unknown directive " + directive_token);
+                    continue;
+                }
+
                 DirectiveInfo directive_info = this->directive_handlers.at(directive_token);
-                if (directive_info.directive == Directive::STR)
+                if (directive_info.raw_line)
                 {
                     std::deque<std::string> arg = { line };
                     (this->*directive_info.handler)(first_pass, arg);
@@ -157,6 +163,7 @@ namespace vv::assembler
     void Assembler::handle_org(const bool first_pass, std::deque<std::string>& operands)
     {
         print_verbose("ORG directive:", true);
+
         if (operands.size() != 1)
         {
             error_occurred("Invalid number of operands. Expected 1: Base-16 memory address");
@@ -185,12 +192,12 @@ namespace vv::assembler
             return;
         }
 
-        if (this->verbose)
+        if (first_pass)
         {
             print_verbose("\tMemory pointer moved to " + operands.front());
         }
 
-        else if (!first_pass)
+        else
         {
             // TODO: Pad binary file with zeros until we reach new ORG
         }
@@ -200,10 +207,7 @@ namespace vv::assembler
 
     void Assembler::handle_dat(const bool first_pass, std::deque<std::string>& operands)
     {
-        if (this->verbose)
-        {
-            print_verbose("DAT directive:", true);
-        }
+        print_verbose("DAT directive:", true);
 
         for (const std::string& operand : operands)
         {
@@ -230,7 +234,7 @@ namespace vv::assembler
                 }
             }
 
-            if (first_pass && this->verbose)
+            if (first_pass)
             {
                 print_verbose("\tAdvancing memory pointer 4 bytes.");
             }
@@ -246,10 +250,7 @@ namespace vv::assembler
 
     void Assembler::handle_byt(const bool first_pass, std::deque<std::string>& operands)
     {
-        if (this->verbose)
-        {
-            print_verbose("BYT directive:", true);
-        }
+        print_verbose("BYT directive:", true);
 
         for (const std::string& operand : operands)
         {
@@ -259,7 +260,7 @@ namespace vv::assembler
             if (operand.starts_with('\''))
             {
                 // Char literal should have at least three characters ', [char], and '
-                if (operand.size() < 3)
+                if (operand.size() < 3 || operand.back() != '\'')
                 {
                     error_occurred("Invalid char literal: " + operand);
                     return;
@@ -324,10 +325,10 @@ namespace vv::assembler
             // We likely have a numeric value
             else
             {
-                int temp;
+                int numVal;
                 try
                 {
-                    temp = std::stoi(operand, nullptr, 0);
+                    numVal = std::stoi(operand, nullptr, 0);
                 }
                 catch (std::invalid_argument)
                 {
@@ -336,16 +337,16 @@ namespace vv::assembler
                 }
 
                 // Check if the value is valid for a char/unsigned char
-                if (temp < INT8_MIN || temp > UINT8_MAX)
+                if (numVal < INT8_MIN || numVal > UINT8_MAX)
                 {
                     error_occurred("Operand \"" + operand + "\" is out of range.");
                     return;
                 }
 
-                value = static_cast<uint8_t>(temp);
+                value = static_cast<uint8_t>(numVal);
             }
 
-            if (first_pass && this->verbose)
+            if (first_pass)
             {
                 print_verbose("\tAdancing memory pointer 1 byte.");
             }

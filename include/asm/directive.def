@@ -1,11 +1,11 @@
 #ifndef X
-#define X(name, enum_val, handler_func)
+#define X(name, enum_val, handler_func, raw_line)
 #endif
 
-X(".ORG", ORG, handle_org)
-X(".DAT", DAT, handle_dat)
-X(".BYT", BYT, handle_byt)
-X(".STR", STR, handle_str)
-X(".RES", RES, handle_res)
-X(".ENT", ENT, handle_ent)
-X(".EQU", EQU, handle_equ)
+X(".ORG", ORG, handle_org, false)
+X(".DAT", DAT, handle_dat, false)
+X(".BYT", BYT, handle_byt, false)
+X(".STR", STR, handle_str, true)
+X(".RES", RES, handle_res, false)
+X(".ENT", ENT, handle_ent, false)
+X(".EQU", EQU, handle_equ, false)

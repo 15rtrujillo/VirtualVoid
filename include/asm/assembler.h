@@ -15,7 +15,7 @@ namespace vv::assembler
     class Assembler
     {
     public:
-        Assembler(const std::filesystem::path& source, const std::filesystem::path& output, const bool verbose);
+        Assembler(const std::filesystem::path& source, const std::filesystem::path& output, const bool verbose = false);
 
         using HandlerFunction = void (Assembler::*)(const bool first_pass, std::deque<std::string>& operands);
 
@@ -23,6 +23,7 @@ namespace vv::assembler
         {
             Directive directive;
             HandlerFunction handler;
+            bool raw_line;
         };
 
         bool assemble();
