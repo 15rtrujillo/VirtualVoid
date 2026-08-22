@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
-project(VirtualVoid)
+project(VirtualVoid LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(SHARED_CORE_FILES
     "include/core/instruction_set.h"
@@ -27,3 +28,11 @@ add_executable(vv-vm
 
 target_include_directories(vv-asm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(vv-vm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+if (MSVC)
+    target_compile_options(vv-asm PRIVATE /W4)
+    target_compile_options(vv-vm PRIVATE /W4)
+else()
+    target_compile_options(vv-asm PRIVATE -Wall -Wextra)
+    target_compile_options(vv-vm PRIVATE -Wall -Wextra)
+endif()

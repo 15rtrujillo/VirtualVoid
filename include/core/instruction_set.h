@@ -22,10 +22,10 @@ namespace vv::core
 #undef X
     };
 
-    const uint32_t MASK_OP = 0xFF000000;
-    const uint32_t MASK_RA = 0x00F00000;
-    const uint32_t MASK_RB = 0x000F0000;
-    const uint32_t MASK_IM = 0x0000FFFF;
+    constexpr uint32_t MASK_OP = 0xFF000000;
+    constexpr uint32_t MASK_RA = 0x00F00000;
+    constexpr uint32_t MASK_RB = 0x000F0000;
+    constexpr uint32_t MASK_IM = 0x0000FFFF;
 }
 
 #endif

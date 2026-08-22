@@ -45,10 +45,7 @@ namespace vv::assembler
         return result;
     }
 
-    Assembler::Assembler(const std::filesystem::path& source, const std::filesystem::path& output, const bool verbose = false) : source(source), output(output), verbose(verbose)
-    {
-
-    }
+    Assembler::Assembler(const std::filesystem::path& source, const std::filesystem::path& output, const bool verbose = false) : source(source), output(output), verbose(verbose) { }
 
     std::unordered_map<std::string, Assembler::DirectiveInfo> Assembler::directive_handlers = {
 #define X(name, enum_val, handler_func) { name, { Directive::enum_val, &Assembler::handler_func } },
@@ -92,15 +89,7 @@ namespace vv::assembler
 
     inline void Assembler::print_verbose(const std::string& message, const bool line) const
     {
-        if (line)
-        {
-            std::cout << "[VERBOSE] Line: " << this->line_counter << ": " << message << std::endl;
-        }
-
-        else
-        {
-            std::cout << "[VERBOSE] " << message << std::endl;
-        }
+        std::cout << "[VERBOSE] " << (line ? "Line: " + std::to_string(this->line_counter) + ": " : "") << message << std::endl;
     }
 
     void Assembler::make_pass(std::ifstream& asm_file, const bool first_pass)
